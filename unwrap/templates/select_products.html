@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .card {
+        transition: transform 0.1s, box-shadow 0.3s;
+        background-color: #a94d4d; /* Add your desired background color */
+        border-radius:  20px; /* Add border-radius for rounded corners */
+		background-color: #EDDCD9;
+
+    }
+	
+    .card:hover {
+        box-shadow:  2px 3px rgba(11, 140, 166, 0.8); /* Adjust the shadow as needed */
+        transform: scale(1.06); /* Add a slight scale on hover */
+    }
+
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+		
+    }
+</style>
+
+<div class="container my-5" style="background-color: rgb(88, 53, 11);">
+    <div class="row justify-content-center" style="padding: 50px; border-spacing: 50px;
+    ">
+        {% for product in products %}
+            <div class="col-sm">
+                <div class="card">
+                    <img src="/static/product{{ product.id }}.JPG" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <div>
+                            <b>{{ product.name }}</b>
+                        </div>
+                        <p class="card-text">{{ product.description }}</p>
+                        <div id="addToCart">
+                            <a href="/addToCart/{{product.id}}">Add to cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

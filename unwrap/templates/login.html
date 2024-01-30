@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+{% block content %}
+    <style>
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .form_area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #EDDCD9;
+            padding: 20px;
+            border: 2px solid #264143;
+            border-radius: 20px;
+            box-shadow: 3px 4px 0px 1px #E99F4C;
+            width: 100%; /* Make the form_group take up 100% width */
+
+        }
+
+        .title {
+            color: #264143;
+            font-weight: 900;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .sub_title {
+            font-weight: 600;
+            margin: 5px 0;
+        }
+
+        .form_group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+        }
+
+        .form_style {
+            outline: none;
+            border: 2px solid #264143;
+            box-shadow: 3px 4px 0px 1px #E99F4C;
+            width: 100%; /* Make the input width 100% */
+            padding: 12px 10px;
+            border-radius: 4px;
+            font-size: 15px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .form_style:focus, .btn:focus {
+            transform: translateY(4px);
+            box-shadow: 1px 2px 0px 0px #E99F4C;
+        }
+
+        .btn {
+            padding: 15px;
+            margin: 25px 0px;
+            width: 100%; /* Make the button width 100% */
+            font-size: 15px;
+            background: #301b01;
+            border-radius: 10px;
+            font-weight: 800;
+            box-shadow: 3px 3px 0px 0px #E99F4C;
+        }
+
+        .btn:hover {
+            opacity: .9;
+        }
+
+        .link {
+            font-weight: 800;
+            color: #264143;
+            padding: 5px;
+        }
+    </style>
+
+    <div class="container">
+        <div class="form_area">
+            <p class="title">Log In</p>
+            <form method="POST" action="" class="form">
+                {{ form.hidden_tag() }}
+                <div class="form_group">
+                    {{ form.email.label(class="sub_title") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form_style is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form_style", style="width: 80%;") }}
+                    {% endif %}
+                </div>
+                <div class="form_group">
+                    {{ form.password.label(class="sub_title") }}
+                    {% if form.password.errors %}
+                        {{ form.password(class="form_style is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.password(class="form_style", style="width: 80%;") }}
+                    {% endif %}
+                </div>
+                <div class="form_group">
+                    {{ form.submit(class="btn btn-outline-info") }}
+                </div>
+                <small class="text-muted">
+                    Need An Account? <a class="ml-2" href="{{ url_for('register') }}">Sign Up Now</a>
+                </small>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,1505 @@
+init.py
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
+from flask_migrate import Migrate
+from flask import render_template, request
+from win10toast import ToastNotifier
+from flask_mail import Mail, Message
+
+app = Flask(__name__)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'azhiyaroil@gmail.com'
+app.config['MAIL_PASSWORD'] = 'lpyf eais tgdb onyp'  # Use the generated app password here
+app.config['MAIL_DEFAULT_SENDER'] = 'azhiyaroil@gmail.com'
+
+
+mail = Mail(app)
+
+from flask_mail import Message
+
+# ... (your existing imports)
+
+def send_order_confirmation_email(user_email, order_details):
+    subject = 'Order Confirmation - Azhiyaar Oil'
+    recipients = ['azhiyaroil@gmail.com']  # Replace with the email where you want to receive order confirmations
+    body = f"User Email: {user_email}\n\nOrder Details:\n{order_details}"
+    
+    msg = Message(subject, recipients=recipients)
+    msg.body = body
+    mail.send(msg)
+
+# ... (your existing code)
+
+@app.route('/place_order', methods=['POST'])
+def place_order():
+    if request.method == 'POST':
+        phone_number = request.form['phone_number']
+        address = request.form['address']
+        oil_type = request.form['oil_type']
+        quantity = request.form['quantity']
+
+        # Compose the email message
+        subject = 'New Order'
+        body = f"Phone Number: {phone_number}\nAddress: {address}\nOil Type: {oil_type}\nQuantity: {quantity}"
+
+        # Send the email
+        message = Message(subject, recipients=['azhiyaroil@gmail.com'], body=body)
+        mail.send(message)
+
+    return '''
+    <html>
+        <head>
+            <style>
+                body {
+                    margin: 0;
+                    padding: 0;
+                    background-image: url('/static/ty.gif');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-items: center;
+                }
+
+                p {
+                    color: black; /* Green color */
+                    font-size: 32px;
+                    font-weight: bold;
+                    text-align: center;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+                    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+                    max-width: 600px; /* Limit the width for better readability */
+                    margin-top: 55px; /* Add some space from the top */
+                    margin-bottom: auto; /* Push the element to the top */
+                }
+            </style>
+        </head>
+        <body>
+            <p>Order Sucessfull</p>
+        </body>
+    </html>
+'''
+
+    return 'Invalid request.'
+
+app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+'C:/Users/iliya/Desktop/oil_web (2)/backend connected_oil/oil_web/unwrap/site.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+bcrypt = Bcrypt(app)
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+login_manager.login_message_category = "info"
+
+# Move the ToastNotifier creation inside the route or function where you want to trigger the notification
+toaster = ToastNotifier()
+
+with app.app_context():
+    db.create_all()
+
+from unwrap import routes
+-----------------------------------------------------------------------------------
+email_utils.py
+# email_utils.py
+from flask_mail import Message
+from . import mail
+
+def send_order_confirmation_email(user_email, order_details, phone_number, address, oil_type, quantity):
+    subject = 'Order Confirmation - Azhiyaar Oil'
+    recipients = [user_email]
+    body = f"User Email: {user_email}\n\nOrder Details:\n{order_details}\n\nPhone Number: {phone_number}\nAddress: {address}\nOil Type: {oil_type}\nQuantity: {quantity}"
+
+    msg = Message(subject, recipients=recipients)
+    msg.body = body
+    mail.send(msg)
+--------------------------------------------------------------------------------
+forms.py
+from flask_wtf import FlaskForm
+from flask_login import current_user
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from unwrap.models import User
+
+
+class RegistrationForm(FlaskForm):
+    firstname = StringField('First Name',
+                           validators=[DataRequired(), Length(min=2, max=20)])
+    lastname = StringField('Last Name',
+                           validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Sign Up')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError("That email is taken. Please choose a different one")
+
+
+class LoginForm(FlaskForm):
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember = BooleanField('Remember Me')
+    submit = SubmitField('Sign in')
+
+class UpdateAccountForm(FlaskForm):
+    firstname = StringField('First Name',
+                           validators=[DataRequired(), Length(min=2, max=20)])
+    lastname = StringField('Last Name',
+                           validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()])
+    submit = SubmitField('Update')
+
+    def validate_email(self, email):
+        if email.data != current_user.email:
+            user = User.query.filter_by(email=email.data).first()
+            if user:
+                raise ValidationError('That email is taken. Please choose a different one.')
+ --------------------------------------------------------------------------------
+ models.py
+ from datetime import datetime
+from unwrap import db, login_manager
+from flask_login import UserMixin
+from flask import flash
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    firstname = db.Column(db.String(20), unique=False, nullable=False)
+    lastname = db.Column(db.String(20), unique=False, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    cart = db.relationship('Cart', backref='buyer', lazy=True)
+
+    def add_to_cart(self,product_id):
+        item_to_add = Cart(product_id=product_id, user_id=self.id)
+        db.session.add(item_to_add)
+        db.session.commit()
+        flash('Your item has been added to your cart!', 'success')
+
+    def __repr__(self):
+        return f"User('{self.firstname}','{self.lastname}', '{self.email}','{self.id}')"
+
+
+
+class Products(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+
+    def __repr__(self):
+        return f"Products('{self.name}', '{self.price}')"
+
+class Cart(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+
+    def update_qty(self, user_id, product_id, qty):
+        cartitem = Cart.query.filter_by(user_id=user_id, product_id=product_id).first()
+
+        if cartitem:
+            cartitem.quantity = qty
+            db.session.commit()
+        else:
+            # Handle the case where the CartItem is not found.
+            print(f"CartItem with user_id={user_id} and product_id={product_id} not found.")
+
+
+
+
+    def __repr__(self):
+        return f"Cart('Product id:{self.product_id}','id: {self.id}','User id:{self.user_id}'')"
+
+----------------------------------------------------------------------------------------------
+routes.py
+import os
+import secrets
+
+from flask import render_template, url_for, flash, redirect, request
+from unwrap import app, db, bcrypt
+from unwrap.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from unwrap.models import User, Products, Cart
+from flask_login import login_user, current_user, logout_user, login_required
+from sqlalchemy import func, update
+import pandas as pd 
+
+def getLoginDetails():
+    if current_user.is_authenticated:
+        noOfItems = Cart.query.filter_by(buyer=current_user).count()
+    else:
+        noOfItems = 0
+    return noOfItems
+pass
+
+@app.route("/")
+@app.route("/home")
+def home():
+    noOfItems = getLoginDetails()
+    return render_template('home.html', noOfItems=noOfItems)
+@app.route('/')
+def index():
+    return render_template('home.html')
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RegistrationForm()
+    if form.is_submitted() and form.validate():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(lastname=form.lastname.data,firstname=form.firstname.data,email=form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        flash('Your account has been created!', 'success')
+        return redirect(url_for('login'))
+    return render_template('register.html', title='Register', form=form)
+
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get("next")
+            return redirect(next_page) if next_page else redirect(url_for('home'))
+        else:
+            flash('Login Unsuccessful. Please check username and password', 'danger')
+    return render_template('login.html', title='Login', form=form)
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+@app.route("/account", methods=['GET', 'POST'])
+@login_required
+def account():
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        current_user.lastname = form.lastname.data
+        current_user.firstname = form.firstname.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('account'))
+    elif request.method == 'GET':
+        form.lastname.data = current_user.lastname
+        form.firstname.data = current_user.firstname
+        form.email.data = current_user.email
+    return render_template('account.html', title='Account',
+                           form=form)
+
+@app.route("/unwrap-project")
+def unwrap_project():
+    noOfItems = getLoginDetails()
+    return render_template("unwrap-project.html", title='The project', noOfItems=noOfItems)
+
+
+@app.route("/how-it-works")
+def how_it_works():
+     return render_template("how-it-works.html", title='How it works')
+
+
+@app.route("/select_products", methods=['GET', 'POST'])
+def select_products():
+    noOfItems = getLoginDetails()
+    products = Products.query.all()
+    return render_template('select_products.html', products=products,noOfItems=noOfItems)
+
+
+
+@app.route("/addToCart/<int:product_id>")
+@login_required
+def addToCart(product_id):
+    # check if product is already in cart
+    row = Cart.query.filter_by(product_id=product_id, buyer=current_user).first()
+    if row:
+        # if in cart update quantity : +1
+        row.quantity += 1
+        db.session.commit()
+        flash('This item is already in your cart, 1 quantity added!', 'success')
+        
+        # if not, add item to cart
+    else:
+        user = User.query.get(current_user.id)
+        user.add_to_cart(product_id)
+    return redirect(url_for('select_products'))
+
+
+@app.route("/cart", methods=["GET", "POST"])
+@login_required
+def cart():
+    noOfItems = getLoginDetails()
+    
+    # Display items in the cart
+    cart = Products.query.join(Cart).add_columns(Cart.quantity, Products.price, Products.name, Products.id).filter_by(buyer=current_user).all()
+    
+    subtotal = 0
+    for item in cart:
+        subtotal += int(item.price) * int(item.quantity)
+
+    if request.method == "POST":
+        qty = request.form.get("qty")
+        idpd = request.form.get("idpd")
+
+        # Ensure the quantity is a positive integer
+        try:
+            qty = int(qty)
+            if qty < 0:
+                raise ValueError("Quantity must be a positive integer.")
+        except ValueError:
+            flash("Invalid quantity. Please enter a positive integer.")
+            return redirect(url_for("cart"))
+
+        # Update the quantity in the cart
+        cartitem = Cart.query.filter_by(product_id=idpd, buyer=current_user).first()
+        if cartitem:
+            cartitem.quantity = qty
+            db.session.commit()
+
+        # Refresh the cart and subtotal after the update
+        cart = Products.query.join(Cart).add_columns(Cart.quantity, Products.price, Products.name, Products.id).filter_by(buyer=current_user).all()
+        subtotal = 0
+        for item in cart:
+            subtotal += int(item.price) * int(item.quantity)
+        flash("Update successful", "success")
+
+    return render_template('cart.html', cart=cart, noOfItems=noOfItems, subtotal=subtotal)
+
+@app.route("/removeFromCart/<int:product_id>")
+@login_required
+def removeFromCart(product_id):
+    item_to_remove = Cart.query.filter_by(product_id=product_id, buyer=current_user).first()
+    db.session.delete(item_to_remove)
+    db.session.commit()
+    flash('Your item has been removed from your cart!', 'success')
+    return redirect(url_for('cart'))
+-------------------------------------------------------------------------------------
+account.html
+{% extends "layout.html" %}
+{% block content %}
+
+      <div class="media">
+        <div class="media-body">
+          <h2 class="account-heading">{{ current_user.firstname }}</h2>
+          <p class="text-secondary">{{ current_user.email }}</p>
+        </div>
+      </div>
+        <form method="POST" action="" enctype="multipart/form-data" class="form">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Account Info</legend>
+                <div class="form-group">
+                    {{ form.firstname.label(class="form-control-label") }}
+
+                    {% if form.firstname.errors %}
+                        {{ form.firstname(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.firstname.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.firstname(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.lastname.label(class="form-control-label") }}
+
+                    {% if form.lastname.errors %}
+                        {{ form.lastname(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.lastname.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.lastname(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+
+{% endblock content %}
+----------------------------------------------------------------------------------------
+home.html
+
+{% extends "layout.html" %}
+{% block content %}
+<head>
+    <!-- Update the CSS in the head of your HTML -->
+<style>
+    .home-page .fade-in-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        outline: 2px solid black;
+        opacity: 0;
+        transform: translateY(-50%) translateX(-50%);
+        animation: fadeIn ease-in-out 1s forwards;
+    }
+
+    .home-page .fade-in-container:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .home-page .fade-in-container:nth-child(2) {
+        animation-delay: 0.5s;
+    }
+
+    .home-page .fade-in-container:nth-child(3) {
+        animation-delay: 1s;
+    }
+    /* Add more nth-child rules for additional elements */
+</style>
+
+</head>
+<!-- Add this line to your home.html -->
+<body class="home-page">
+
+<!-- ... Your existing HTML code ... -->
+<marquee behavior="scroll" direction="left" style="background-color: #ffeeba; padding: 5px;">
+    <h6 style="margin: 0; color: #856404;">****** Pure Oils *** Masalas *** Fertlizers******                contact-6380899780 ******</h6>
+</marquee>
+<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="height: 450px">
+    <ol class="carousel-indicators">
+      <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <a href="">
+            
+<style>
+    /* Additional Styles for Colorful and Attractive Design */
+
+    body {
+        background-color: #f8f9fa; /* Light gray background color */
+        color: #343a40; /* Dark text color */
+    }
+
+    /* Carousel Styles */
+    #carouselExampleIndicators {
+        margin-top: 20px;
+    }
+
+    /* Jumbotron Styles */
+    .jumbotron {
+        background-image: url('/static/your-background-image.jpg'); /* Replace with your actual background image */
+        background-size: cover;
+        color: #ffffff; /* White text color */
+        text-align: center;
+        padding: 80px 0;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 40vh;
+    }
+
+    .jumbotron h3 {
+        font-size: 5.5rem;
+        font-weight: bold;
+        color: #f06292; /* Pink text color */
+        text-shadow: 2px 2px 4px rgba(240, 98, 146, 0.852);
+
+        /* Center and justify the text */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        word-wrap: break-word;
+    }
+
+    .jumbotron p {
+        font-size: 1.5rem;
+        text-shadow: 1px 1px 3px rgba(240, 98, 146, 0.852);
+
+        margin-top: 20px;
+        color: #ffffff;
+    }
+
+    /* Products Section Styles */
+    #products {
+        background-color: #f8f9fa; /* Light gray background color */
+        padding: 40px 0;
+    }
+
+    /* Card Styles */
+    .custom-card {
+        background-color: #ffffff; /* White card background color */
+        box-shadow: 0 20px 25px rgba(25, 66, 9, 0.823);
+        transition: box-shadow 0.3s ease-in-out; /* Smooth transition on hover */
+    }
+
+    .custom-card:hover {
+        box-shadow: 0 30px 35px rgba(25, 66, 9, 0.823);
+    }
+
+    /* Your other styles remain unchanged */
+
+</style>
+
+          <style>
+            .img-link {
+                display: inline-block;
+                overflow: hidden;
+                position: relative;
+                border-radius: 10px; /* Optional: Rounded corners for a softer look */
+            }
+        
+            .img-link:hover img {
+                transform: scale(1.1); /* Increase size on hover */
+            }
+        
+            .img-link img {
+                transition: transform 0.3s ease-in-out;
+            }
+        </style>
+    <div style="box-shadow: 0 10px 20px rgba(25, 66, 9, 0.823); width: 100%;">
+        <a href="#container" onclick="window.location.hash='container';" class="img-link">
+            <img src="/static/organic.webp" class="d-block w-100" alt="...">
+        </a>
+    </div>   
+        
+       
+      </a>
+      
+      </div>
+     
+    </div>
+   
+  </div>
+  
+  <style>
+    /* Your existing styles */
+
+    .jumbotron {
+        background-image: url('/static/nat.jpg'); /* Add your background image */
+        background-size: cover;
+        color: #3e3737;
+        text-align: center;
+        padding: 150px 0;
+        position: relative;
+        display: flex;
+        box-shadow:10px 10px 20px rgba(7, 40, 8, 0.852);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 80vh; /* Set the height to full viewport height */
+    }
+
+    .jumbotron h3 {
+        font-size: 5.5rem;
+        font-weight: bold;
+        color: rgb(255, 255, 255);
+        text-shadow: 6px 6px 12px rgba(21, 86, 23, 0.852);
+
+        /* Center and justify the text */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        word-wrap: break-word; /* Add this property to prevent overflowing */
+    }
+
+    .jumbotron p {
+        font-size: 1.5rem;
+        text-shadow: 1px 1px 3px rgba(21, 86, 23, 0.852);
+
+        margin-top: 0px;
+        color: black;
+    }
+
+    /* Smooth scroll */
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
+
+
+<div class="jumbotron" id="home"  style="width: 100%; height: 600px;">
+    <h3 class="display-2">
+        <span>100%</span>
+        <br>
+        <br>
+        <span>சுத்தமான</span>
+        <br>
+        <br>
+        <span>எண்ணெய்</span>
+       
+    </h3>
+
+</div>
+
+<!-- Your other sections and content -->
+
+<div id="products">
+    <!-- Products section content goes here -->
+</div>
+
+
+  
+<div class="container" id="container">
+    <div class="row">
+        <!-- Coconut Oil -->
+   
+        <style>
+            .card-background-image {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        
+            .custom-card:hover .card-background-image {
+                display: block;
+            }
+        </style>
+        
+        <div class="col-md-4">
+            <!-- Coconut Oil content in a centered card format with zoom effect and background color on hover -->
+            <a class="custom-card card d-flex flex-column align-items-center justify-content-center zoom-on-hover smoke-effect" style="background-color: #ffffff; box-shadow: 0 20px 25px rgba(25, 66, 9, 0.823); outline: 0px solid #093602; outline-offset: -15px; border-radius: 15px; width: 300px; height: 400px;"> <!-- Adjust the width and height here -->
+                <!-- Card content goes here -->
+        
+                <img src="static/coconut.jpg" alt="Coconut Oil" class="card-img-top mt-4" style="height: 170px; width: 70px;">
+                <div class="card-body text-center mt-5" style="width: 100%;"> <!-- Adjust the width here -->
+                    <h5 class="card-title">Coconut Oil</h5>
+                    <p class="card-text">Pure Chekku Oil</p>
+                    <del class="original-price">₹250</del>
+                    <p class="discounted-price">Price: ₹230</p>
+                    <p class="card-text">Quantity: 1 liter</p>
+                </div>
+                <!-- Modal for Coconut Oil -->
+                <div class="modal fade" id="coconutOilModal" tabindex="-1" role="dialog" aria-labelledby="coconutOilModalLabel" aria-hidden="true">
+                    <!-- Modal content goes here -->
+                </div>
+            </a>
+        </div>
+        
+        
+        <!-- Your other content -->
+        
+        <!-- Include jQuery -->
+        
+        
+        
+
+         
+      
+        
+        
+
+        <!-- Groundnut Oil -->
+       <!-- Groundnut Oil -->
+<!-- Groundnut Oil -->
+<div class="col-md-4">
+    <!-- Groundnut Oil content in a centered card format with zoom effect and background color on hover -->
+    <a class="custom-card card d-flex flex-column align-items-center justify-content-center zoom-on-hover smoke-effect" style="background-color: #ffffff; box-shadow: 0 20px 25px rgba(25, 66, 9, 0.823); outline: 0px solid #093602; outline-offset: -15px; border-radius: 15px; width: 300px; height: 400px;">
+        <!-- Card content goes here -->
+
+        <img src="/static/ground.jpg" alt="Groundnut Oil" class="card-img-top mt-4" style="height: 170px; width: 70px;">
+        <div class="card-body text-center mt-5" style="width: 100%;">
+            <h5 class="card-title">Groundnut Oil</h5>
+            <p class="card-text">Pure Chekku Oil</p>
+            <del class="original-price">₹265</del>
+            <p class="discounted-price">Price: ₹240</p>
+            <p class="card-text">Quantity: 1 liter</p>
+        </div>
+        <!-- Modal for Groundnut Oil -->
+        <div class="modal fade" id="groundNutOilModal" tabindex="-1" role="dialog" aria-labelledby="groundNutOilModalLabel" aria-hidden="true">
+            <!-- Modal content goes here -->
+        </div>
+    </a>
+</div>
+
+<!-- Gingelly Oil -->
+<div class="col-md-4">
+    <!-- Gingelly Oil content in a centered card format with zoom effect and background color on hover -->
+    <a class="custom-card card d-flex flex-column align-items-center justify-content-center zoom-on-hover smoke-effect" style="background-color: #ffffff; box-shadow: 0 20px 25px rgba(25, 66, 9, 0.823); outline: 0px solid #093602; outline-offset: -15px; border-radius: 15px; width: 300px; height: 400px;">
+        <!-- Card content goes here -->
+
+        <img src="/static/gingelly.jpg" alt="Gingelly Oil" class="card-img-top mt-4" style="height: 170px; width: 70px;">
+        <div class="card-body text-center mt-5" style="width: 100%;">
+            <h5 class="card-title">Gingelly Oil</h5>
+            <p class="card-text">Pure Chekku Oil</p>
+            <del class="original-price">₹380</del>
+            <p class="discounted-price">Price: ₹350</p>
+            <p class="card-text">Quantity: 1 liter</p>
+        </div>
+        <!-- Modal for Gingelly Oil -->
+        <div class="modal fade" id="gingellyOilModal" tabindex="-1" role="dialog" aria-labelledby="gingellyOilModalLabel" aria-hidden="true">
+            <!-- Modal content goes here -->
+        </div>
+    </a>
+</div>
+
+
+
+<!-- Your existing JavaScript code -->
+
+
+
+{% endblock content %}
+</body>
+</html>
+---------------------------------------------------------------------------------------
+layout.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link href="https://fonts.googleapis.com/css?family=Manjari&display=swap" rel="stylesheet">
+
+    <!-- Glyphicons CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    
+    <!-- Your custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+    {% if title %}
+        <title>Unwrap - {{ title }}</title>
+    {% else %}
+        <title>Unwrap</title>
+    {% endif %}
+    
+    <!-- Add the new CSS for the fade-in effect -->
+    <style>
+      .fade-in-container {
+          background-color: white;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          outline: 2px solid black;
+          opacity: 0;
+          transform: translateY(-50%) translateX(-50%);
+          animation: fadeIn ease-in-out 0.2s forwards; /* Adjust the duration to make it very quick */
+      }
+  
+      .fade-in-container:nth-child(1) {
+          animation-delay: 0s;
+      }
+  
+      .fade-in-container:nth-child(2) {
+          animation-delay: 0.2s;
+      }
+  
+      .fade-in-container:nth-child(3) {
+          animation-delay: 0.4s;
+      }
+      /* Add more nth-child rules for additional elements */
+  </style>
+  
+</head>
+<body>
+    <!-- First div -->
+    <div class="fade-in-container">
+        <div style="text-align: center; display: flex; align-items: center; justify-content: center;">
+            <img id="leftLogo" alt="Left Logo" src="{{ url_for('static', filename='oil2.png') }}" style="margin-right: 10px; width: 5em;" />
+            <div style="color: rgb(5, 57, 43); font-weight: bold; font-size: 5em; font-family: 'Arial', sans-serif;">
+                Aaliyar Oil
+            </div>
+            <img id="rightLogo" alt="Right Logo" src="{{ url_for('static', filename='oil2.png') }}" style="margin-left: 10px; width: 5em;" />
+        </div>
+    </div>
+
+    <!-- Second div -->
+    <div >
+        <header class="site-header">
+            <nav class="navbar  navbar-expand-md navbar-light fixed-top">
+                <div class="container">
+                    <div class="collapse navbar-collapse" id="navbarToggle" >
+                        <div class="navbar-nav mr-auto" >
+
+                            <a class="nav-item nav-link" href="{{ url_for('unwrap_project') }}">About us</a>
+                            <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
+                            <a class="nav-item nav-link" href="{{ url_for('select_products') }}">Products</a>
+                        </div>
+                        <!-- Navbar Right Side -->
+                        <div class="navbar-nav nostack" style="display: inline;">
+                            {% if current_user.is_authenticated %}
+                                <a class="nav-item nav-link" href="{{ url_for('cart') }}" ><span class="glyphicon glyphicon-shopping-cart" id="cartitems" ></span></a>
+                                <small id="noOfItems">{{noOfItems}}</small>
+                                <a class="nav-item nav-link" href="{{ url_for('account') }}"><span class="glyphicon glyphicon-user" ></span></a>    
+                                <a class="nav-item nav-link" href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out" ></span></a>   
+                            {% else %}
+                                <a class="nav-item nav-link" href="{{ url_for('login') }}" ><span class="glyphicon glyphicon-user" ></span></a>                 
+                                <a class="nav-item nav-link" href="{{ url_for('cart') }}"  ><span class="glyphicon glyphicon-shopping-cart"></span></a>
+                            {% endif %}
+                        </div>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+    </div>
+
+    <!-- Third div (main content) -->
+    <div>
+        <main role="main" class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+        <footer>
+            
+        </footer>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
+-----------------------------------------------------------------------------------------------------
+login.html
+{% extends "layout.html" %}
+{% block content %}
+    <!-- <div class="row"> -->
+        <form method="POST" action="" class="form">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4" style="text-align: center;">Log In</legend>
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label(class="form-control-label") }}
+                    {% if form.password.errors %}
+                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                
+            </fieldset>
+            <div class="form-group" style="text-align: center;">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+                <small class="text-muted">
+                Need An Account? <a class="ml-2" href="{{ url_for('register') }}">Sign Up Now</a>
+                </small>
+        </form>
+    <!-- </div> -->
+    <!-- <div class="row"> -->
+        
+    <!-- </div> -->
+{% endblock content %}
+-------------------------------------------------------------------------------------
+product.html
+{% extends "layout.html" %}
+{% block head %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+{% endblock head %}
+{% block content %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <article class="media content-section">
+          <div class="media-body product-container">
+            <div class="article-metadata">
+              <h2 class="article-title">{{ product.name }}</h2>
+              <p class="article-content">{{ product.description }}</p>
+              <div id="addToCart">
+                <a href="/addToCart/{{product.id}}">Add to cart</a>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+--------------------------------------------------------------------------------------------------------------------
+register.html
+{% extends "layout.html" %}
+{% block content %}
+        <form method="POST" action="" class="form">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Create Account</legend>
+                <div class="form-group">
+                    {{ form.firstname.label(class="form-control-label") }}
+
+                    {% if form.firstname.errors %}
+                        {{ form.firstname(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.firstname.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.firstname(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.lastname.label(class="form-control-label") }}
+
+                    {% if form.lastname.errors %}
+                        {{ form.lastname(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.lastname.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.lastname(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.password.label(class="form-control-label") }}
+                    {% if form.password.errors %}
+                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.confirm_password.label(class="form-control-label") }}
+                    {% if form.confirm_password.errors %}
+                        {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.confirm_password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.confirm_password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+                <div class="border-top pt-3">
+                    <small class="text-muted">
+                        Already Have An Account? <a class="ml-2" href="{{ url_for('login') }}">Sign In</a>
+                    </small>
+                </div>
+        </form>
+
+
+{% endblock content %}
+-------------------------------------------------------------------------------------------------------
+select_products.html
+{% extends "layout.html" %}
+{% block content %}
+<div class="row">
+    {% for product in products %}
+    
+
+        <div class="col-sm">
+	        <div class="card">
+			  	<img src="/static/product{{ product.id }}.JPG" class="card-img-top" alt="...">
+			  	<div class="card-body">
+					<div>
+						<b>
+						{{ product.name }}
+						</b>
+					</div>					    
+				    <p class="card-text">{{ product.description }}</p>
+					<div id="addToCart">
+						<a href="/addToCart/{{product.id}}">Add to cart</a>
+					</div>
+        		</div>
+			</div>
+		</div>
+
+	
+            
+
+
+    {% endfor %}
+</div>
+{% endblock content %}
+----------------------------------------------------------------------------------------
+unwrap_project.html
+{% extends "layout.html" %}
+
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <h1>Pollachi Co-operative Marketing Society LTD(PCMS-K666)</h1>
+        <img src="/static/about1.jpg" class="d-block w-100" alt="...">
+        <h3>
+            <p>
+                Welcome to the official website of Pollachi Co-operative Marketing Society (PCMS), a vital player in the cooperative movement dedicated to the socio-economic development of the people in Tamil Nadu, India.</p>
+        </h3>
+        <h1><p>Our Cooperative Legacy</p></h1>
+        <h3><p>The cooperative movement in Tamil Nadu, particularly in Pollachi, has deep roots and has significantly contributed to economic development and social progress. The first cooperative societies for agricultural loans and consumer stores were established in Tamil Nadu, setting the stage for a robust cooperative ecosystem. Currently, there are 25,768 cooperative societies functioning in the state.</p></h3>
+
+       
+        
+        <div >  
+        <h1>
+            <p >Government Recognition and Support
+            </p>
+        </h1>
+        <h3><p>The Government's recognition of the importance of cooperatives is evident through various schemes aimed at supporting farmers and consumers. PCMS has played a pivotal role in the successful implementation of government initiatives, such as waiving cooperative farm loans and distributing essential commodities at subsidized rates through fair price shops.</p></h3>
+        <h1>Registrar of Cooperative Societies</h1>
+        <h3><p>PCMS operates under the guidance of the Registrar of Cooperative Societies, Tamil Nadu. The Registrar oversees various functions, including cooperative credit for agricultural production, urban credit, marketing and processing of agricultural produce, and the implementation of the Public Distribution System.</p></h3>
+    <h1>Cooperative Credit and Agriculture Development</h1>
+    <h3><p>PCMS actively participates in cooperative credit structures, providing short-term, medium-term, and long-term loans to farmers. The society's focus extends beyond credit to encompass agricultural marketing, processing, and storage, contributing to the overall development of the agriculture sector.</p></h3>
+   <h1>Cooperative Marketing and Consumer Services</h1>
+   <h3><p>Cooperative marketing lies at the heart of PCMS's activities. Through a network of primary cooperative marketing societies, the society ensures the fair and remunerative pricing of agricultural produce. Consumer cooperatives, organized at different tiers, play a crucial role in the distribution of essential commodities, contributing to food security.</p></h3>
+<h1>Public Distribution System (PDS)</h1>
+<h3>As a key player in the PDS, PCMS operates fair price shops, ensuring the availability of quality rice and essential commodities at affordable prices to over 1.68 crore cardholders. The society also runs part-time and mobile fair price shops, reaching families in remote areas.</h3></div>
+
+</h3>
+</div>
+</div>
+
+    </div>
+    <div>
+        <div style="text-align: center;">
+            <h1>
+                <p>Our Products</p>
+            </h1>
+            
+            <div class="row" style="justify-content: center;">
+                <div class="column">
+                    <h2>Pure Checked Oils</h2>
+                    
+                        <li><strong>Coconut Oil:</strong> Pure and high-quality coconut oil sourced locally.</li>
+                        <li><strong>Gingelly Oil:</strong> Cold-pressed gingelly oil known for its rich flavor and nutritional benefits.</li>
+                        <li><strong>Groundnut Oil:</strong> Groundnut (peanut) oil, ensuring purity and freshness.</li>
+                    
+                </div>
+                <div class="column">
+                    <h2>Fertilizers</h2>
+                        <li><strong>DAP (Diammonium Phosphate):</strong> A widely used fertilizer containing nitrogen and phosphorus for plant growth.</li>
+                        <li><strong>Urea:</strong> Nitrogen-rich fertilizer promoting vigorous vegetative growth.</li>
+                        <li><strong>Potash:</strong> A potassium-rich fertilizer essential for overall plant health.</li>
+                        <li><strong>MOP (Muriate of Potash):</strong> A chloride-containing potassium fertilizer for enhanced crop yield.</li>
+                        <li><strong>Super Phosphate:</strong> Phosphate-rich fertilizer supporting root development and flowering.</li>
+                        <li><strong>Ammonium Sulphate:</strong> A nitrogen and sulfur-containing fertilizer suitable for various crops.</li>
+                        <li><strong>10:26:26:</strong> A balanced fertilizer with the optimal ratio of nitrogen, phosphorus, and potassium.</li>
+                </div>
+            </div>
+        </div>
+    
+        <!-- ... existing content ... -->
+    </div>
+
+{% endblock content %}
+---------------------------------------------------------------------------------------------------
+run.py
+from unwrap import app
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+----------------------------------------------------------------------------------------------
+requirements.text
+flask
+flask_sqlalchemy
+flask_bcrypt
+flask_login
+flask_wtf
+wtforms
+sqlalchemy
+email_validator
+------------------------------------------------------------------------------
+main.css
+body {
+  background: #000000;
+  margin-top: 5rem;
+  color: #000000; 
+  text-align: center;
+  font-family: 'Manjari', sans-serif;
+
+}
+
+h1, h2, h3, h4
+{
+  width: 100%;
+
+}
+
+#navbarToggle
+{
+  margin-top:20px;
+}
+
+#noOfItems
+{
+  margin-left: -20px
+}
+
+.card
+{
+  width: 25rem; 
+  height: 40rem;
+  margin-bottom: 20px;
+}
+
+.carousel-inner
+{
+  height: 500px
+}
+
+.form
+{
+  margin: auto; 
+  width: 60%; 
+  padding: 50px
+}
+
+main {
+
+  color: #00264d; 
+  text-align: center;
+  font-family: 'Manjari', sans-serif;
+}
+
+header
+{
+  height: 90px;  
+  border-bottom: 1px solid lightgrey; 
+}
+
+
+
+#logo
+{
+  height:50px;
+}
+
+#navbarToggle
+{
+  font-family: 'Manjari', sans-serif;
+  font-size:   18px;
+}
+
+
+
+.glyphicon
+{
+  color: #00264d; 
+  height: 10px;
+  font-size: 20px;
+}
+
+.glyphicon:hover
+{
+  color: #43b9f0; 
+}
+
+
+.site-header .navbar-nav .nav-link {
+  color: #00264d;
+}
+
+.site-header .navbar-nav .nav-link:hover {
+  color: #43b9f0;
+}
+
+.site-header .navbar-nav .nav-link.active {
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.content-section {
+  background: #ffffff;
+  padding: 10px 20px;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
+
+
+.account-heading {
+  font-size: 2.5rem;
+}
+
+
+.nav-item
+{
+  margin-right: 20px
+}
+
+footer {
+  left: 0;
+  bottom: 0;
+  text-align: center;
+  background-color: #f2f2f2;
+  font-family: 'Manjari', sans-serif;
+  margin-top: 40px;
+  color: #00264d
+}
+
+.nav-link
+{
+  display: inline;
+}
+.zoom-on-hover:hover {
+  transform: scale(1.40);
+  transition: transform 0.20s ease-in-out;
+  background-color: #f1efef; /* Change the color as needed */
+}
+
+.custom-card:hover .card-background-video {
+  opacity: 1;
+}
+.card-background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.custom-card:hover .card-background-video {
+  opacity: 1.7; /* Adjust this value as needed */
+}
+.message.message-success {
+  font-size: 16px; /* Adjust the font size as needed */
+}
+/* Add these styles to your external stylesheet */
+.product-container {
+  box-shadow: 0 20px 25px rgba(25, 66, 9, 0.823);
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+}
+
+.article-metadata {
+  height: fit-content;
+  box-shadow: 0 10px 15px rgba(25, 66, 9, 0.823);
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.article-title {
+  color: #007bff;
+}
+
+#addToCart a {
+  background-color: #28a745;
+  color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+.product-container {
+  width: 400px;
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  transition: box-shadow 0.3s ease; /* Add transition for smooth shadow change */
+}
+
+.product-container:hover {
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3); /* Increase the shadow size on hover */
+}
+/* Styles for screens smaller than 768 pixels (typical mobile screens) */
+@media screen and (max-width: 768px) {
+  /* Add your mobile-specific styles here */
+  body {
+    font-size: 14px;
+  }
+
+  .container {
+    width: 100%;
+  }
+
+  /* ... other adjustments ... */
+}
+h1 {
+  line-height: 1.5; /* Adjust line height as needed */
+}
+h1 {
+  margin: 10px 0; /* Adjust margins as needed */
+}
+h1 {
+  text-align: center;
+}
+h1 {
+  max-width: 100%; /* Adjust as needed */
+}
+@media only screen and (max-width: 768px) {
+  h1 {
+    font-size: 24px; /* Adjust the font size as needed */
+  }
+}
+body {
+  background: #ffffff;
+  margin-top: 5rem;
+  color: #ffffff;
+  text-align: center;
+  font-family: 'Manjari', sans-serif;
+}
+
+h1 {
+  text-align: center;
+  max-width: 100%; /* Adjust as needed */
+  line-height: 1.5; /* Adjust line height as needed */
+  margin: 10px 0; /* Adjust margins as needed */
+
+  @media only screen and (max-width: 768px) {
+    font-size: 24px; /* Adjust the font size as needed for mobile screens */
+  }
+}
+
+/* Add your other styles for different elements here */
+
+/* Media query for screens smaller than 768 pixels (typical mobile screens) */
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .container {
+    width: 100%;
+  }
+
+  /* Add your other mobile-specific styles here */
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn ease 4s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  outline: 2px solid black;
+  opacity: 0;
+  transform: translateY(-50%) translateX(-50%);
+  animation: fadeIn ease 0.1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(-50%) translateX(-50%);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0) translateX(0);
+  }
+}
+
+--------------------------------------------------------------------------------------

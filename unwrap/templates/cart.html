@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div id="cartItems">
+        <h2>Shopping Cart</h2>
+
+        {% if not cart %}
+            <p>Your cart is currently empty.</p>
+            <a href="{{ url_for('select_products') }}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">CONTINUE SHOPPING</a>
+        {% else %}
+            <div style="text-align: right;">Price</div>
+            <div id="tableItems">
+                {% for item in cart %}
+                    <hr>
+                    <div id="itemName" style="text-align: left;">
+                        <img src="/static/product{{ item.id }}.JPG" class="card-img-top" alt="..." style="height: 80px; width:80px">
+                        <span id="itemNameTag">{{item.name}}</span>
+                        <span id="itemNameTag"><div style="text-align: right">₹{{item.price}}</div></span>
+                        <form action="{{ url_for('cart') }}" method="post">
+                            <div class="form-group">
+                                <input type="hidden" name="idpd" value="{{item.id}}"/>
+                                <select class="form-control" id="exampleFormControlSelect1" style="width:70px; height: 30px" name="qty">
+                                    <option disabled="Quantity">Qty</option>
+                                    <option selected="QtyinCart">{{item.quantity}}</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                </select>
+                                <button class="btn btn-primary" type="submit">update</button>
+                                <a href="/removeFromCart/{{item.id}}">Delete</a>
+                            </div>
+                        </form>
+                    </div>
+                {% endfor %}
+                <hr>
+                <div id="total" style="text-align: right">
+                    <span id="subtotal">total: ₹{{subtotal}}</span>
+                </div>
+
+                <style>
+                    #orderDetails {
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        padding: 20px;
+                        max-width: 400px; /* Adjust the maximum width as needed */
+                        margin: auto; /* Center the card */
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+                
+                    .form-group {
+                        margin-bottom: 10px;
+                        width: 50%; /* Make the form_group take up 100% width */
+
+                    }
+                
+                    label {
+                        display: block;
+                        margin-bottom: 5px;
+                    }
+                
+                    input, select {
+                        width: 100%;
+                        padding: 8px;
+                        box-sizing: border-box;
+                        
+                    }
+                
+                    /* Larger width for the address input */
+                    input[name="address"] {
+                        width: 100%; /* Adjust the width as needed */
+                        
+                    }
+                
+                    button {
+                        padding: 10px;
+                        background-color: #4CAF50;
+                        color: white;
+                        border: none;
+                        cursor: pointer;
+                    }
+                </style>
+                
+<!-- Order details form -->
+<div class="container">
+    <div class="form_area">
+        <p class="title">Order Details</p>
+        <form action="{{ url_for('place_order') }}" method="post">
+            <div class="form_group">
+                <label class="sub_title" for="name">Name:</label>
+                <input placeholder="Enter your name" class="form_style" type="text" name="name" required>
+            </div>
+            
+            <div class="form_group">
+                <label class="sub_title" for="phone_number">Phone Number:</label>
+                <input placeholder="Enter your phone number" class="form_style" type="text" name="phone_number" required>
+            </div>
+            <div class="form_group">
+                <label class="sub_title" for="address">Address:</label>
+                <input placeholder="Enter your address" class="form_style" type="text" name="address" required>
+            </div>
+            <div class="form_group">
+                <label class="sub_title" for="oil_type">Oil Type:</label>
+                <select class="form_style" name="oil_type" required>
+                    <option value="coconut">Coconut Oil</option>
+                    <option value="gingelly">Gingelly Oil</option>
+                    <option value="groundnut">Groundnut Oil</option>
+                </select>
+            </div>
+            <div class="form_group">
+                <label class="sub_title" for="quantity">Quantity:</label>
+                <input placeholder="Enter the quantity" class="form_style" type="number" name="quantity" required>
+            </div>
+            <div>
+                <button class="btn" type="submit">Place Order</button>
+            </div>
+        </form>
+        <marquee><h6> once order received, you will receive a call from our representative with your order status and delivery information.</h6></marquee>
+    </div>
+</div>
+
+        {% endif %}
+    </div>
+
+    <!-- Add JavaScript to handle button click and trigger notification -->
+    <script>
+        document.getElementById('orderButton').addEventListener('click', function() {
+            // Gather form data
+            const formData = new FormData(document.getElementById('orderForm'));
+
+            // Use Fetch API to send a request to the server
+            fetch('/place_order', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Display the response from the server in the console (for debugging purposes)
+                console.log(data);
+                // Trigger a notification (you can customize this part)
+                alert("Azhiyaar Oil - Your order placed");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+{% endblock content %}

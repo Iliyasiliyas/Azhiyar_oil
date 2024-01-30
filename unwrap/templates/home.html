@@ -1,0 +1,343 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<head>
+    <!-- Update the CSS in the head of your HTML -->
+<style>
+    .home-page .fade-in-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        outline: 2px solid black;
+        opacity: 0;
+        transform: translateY(-50%) translateX(-50%);
+        animation: fadeIn ease-in-out 1s forwards;
+    }
+
+    .home-page .fade-in-container:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .home-page .fade-in-container:nth-child(2) {
+        animation-delay: 0.5s;
+    }
+
+    .home-page .fade-in-container:nth-child(3) {
+        animation-delay: 1s;
+    }
+    /* Add more nth-child rules for additional elements */
+</style>
+
+</head>
+<!-- Add this line to your home.html -->
+<body class="home-page">
+
+<!-- ... Your existing HTML code ... -->
+<marquee behavior="scroll" direction="left" style="background-color: #ffeeba; padding: 5px;">
+    <h6 style="margin: 0; color: #856404;">****** Pure Oils *** Masalas *** Fertlizers******                contact-6380899780 ******</h6>
+</marquee>
+<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="height: 450px">
+    <ol class="carousel-indicators">
+      <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <a href="">
+            
+<style>
+    /* Additional Styles for Colorful and Attractive Design */
+
+    body {
+        background-color: #f8f9fa; /* Light gray background color */
+        color: #343a40; /* Dark text color */
+    }
+
+    /* Carousel Styles */
+    #carouselExampleIndicators {
+        margin-top: 20px;
+    }
+
+    /* Jumbotron Styles */
+    .jumbotron {
+        background-image: url('/static/your-background-image.jpg'); /* Replace with your actual background image */
+        background-size: cover;
+        color: #ffffff; /* White text color */
+        text-align: center;
+        padding: 80px 0;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 40vh;
+    }
+
+    .jumbotron h3 {
+        font-size: 5.5rem;
+        font-weight: bold;
+        color: #f06292; /* Pink text color */
+        text-shadow: 2px 2px 4px rgba(240, 98, 146, 0.852);
+
+        /* Center and justify the text */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        word-wrap: break-word;
+    }
+
+    .jumbotron p {
+        font-size: 1.5rem;
+        text-shadow: 1px 1px 3px rgba(240, 98, 146, 0.852);
+
+        margin-top: 20px;
+        color: #ffffff;
+    }
+
+    /* Products Section Styles */
+    #products {
+        background-color: #f8f9fa; /* Light gray background color */
+        padding: 40px 0;
+    }
+
+    /* Card Styles */
+    .custom-card {
+        background-color: #ffffff; /* White card background color */
+        box-shadow: 0 20px 25px rgba(25, 66, 9, 0.823);
+        transition: box-shadow 0.3s ease-in-out; /* Smooth transition on hover */
+    }
+
+    .custom-card:hover {
+        box-shadow: 0 30px 35px rgba(25, 66, 9, 0.823);
+    }
+
+    /* Your other styles remain unchanged */
+
+</style>
+
+          <style>
+            .img-link {
+                display: inline-block;
+                overflow: hidden;
+                position: relative;
+                border-radius: 10px; /* Optional: Rounded corners for a softer look */
+            }
+        
+            .img-link:hover img {
+                transform: scale(1.1); /* Increase size on hover */
+            }
+        
+            .img-link img {
+                transition: transform 0.3s ease-in-out;
+            }
+        </style>
+    <div style="box-shadow: 0 10px 20px rgba(25, 66, 9, 0.823); width: 100%;">
+        <a href="#container" onclick="window.location.hash='container';" class="img-link">
+            <img src="/static/organic.webp" class="d-block w-100" alt="...">
+        </a>
+    </div>   
+        
+       
+      </a>
+      
+      </div>
+     
+    </div>
+   
+  </div>
+  
+  <style>
+    /* Your existing styles */
+
+    .jumbotron {
+        background-image: url('/static/nat.jpg'); /* Add your background image */
+        background-size: cover;
+        color: #3e3737;
+        text-align: center;
+        padding: 150px 0;
+        position: relative;
+        display: flex;
+        box-shadow:10px 10px 20px rgba(7, 40, 8, 0.852);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 80vh; /* Set the height to full viewport height */
+    }
+
+    .jumbotron h3 {
+        font-size: 5.5rem;
+        font-weight: bold;
+        color: rgb(255, 255, 255);
+        text-shadow: 6px 6px 12px rgba(21, 86, 23, 0.852);
+
+        /* Center and justify the text */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        word-wrap: break-word; /* Add this property to prevent overflowing */
+    }
+
+    .jumbotron p {
+        font-size: 1.5rem;
+        text-shadow: 1px 1px 3px rgba(21, 86, 23, 0.852);
+
+        margin-top: 0px;
+        color: black;
+    }
+
+    /* Smooth scroll */
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
+
+
+<div class="jumbotron" id="home"  style="width: 100%; height: 600px;">
+    <h3 class="display-2">
+        <span>100%</span>
+        <br>
+        <br>
+        <span>சுத்தமான</span>
+        <br>
+        <br>
+        <span>எண்ணெய்</span>
+       
+    </h3>
+
+</div>
+
+<!-- Your other sections and content -->
+
+<div id="products">
+    <!-- Products section content goes here -->
+</div>
+
+
+  
+<div class="container" id="container">
+    <div class="row">
+        <!-- Coconut Oil -->
+   
+        <style>
+            .card-background-image {
+                display: none;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                background-color: #EDDCD9;
+
+            }
+        
+            .custom-card:hover .card-background-image {
+                display: block;
+            }
+        </style>
+        
+        <div class="col-md-4">
+            <!-- Coconut Oil content in a centered card format with zoom effect and background color on hover -->
+            <a class="custom-card card d-flex flex-column align-items-center justify-content-center zoom-on-hover smoke-effect" 
+                style="background-color: #ffffff; box-shadow: 0 20px 25px rgba(25, 66, 9, 0.823); outline: 0px solid #093602; outline-offset: -15px; border-radius: 15px; width: 300px; height: 400px;"> <!-- Adjust the width and height here -->
+                
+                <!-- First section - Image -->
+                <div class="card-img-container">
+                    <img src="static/coconut.jpg" alt="Coconut Oil" class="card-img-top mt-4" style="height: 170px; width: 70px;">
+                </div>
+        
+                <!-- Second section - Text -->
+                <div class="card-text-container text-center mt-5" style="width: 100%;  background-color: #332104; color: white;
+                "> <!-- Adjust the width here -->
+                    <h5 class="card-title">Coconut Oil</h5>
+                    <p class="card-text">Pure Chekku Oil</p>
+                    <del class="original-price">₹250</del>
+                    <p class="discounted-price">Price: ₹230</p>
+                    <p class="card-text">Quantity: 1 liter</p>
+                </div>
+        
+                <!-- Modal for Coconut Oil -->
+                <div class="modal fade" id="coconutOilModal" tabindex="-1" role="dialog" aria-labelledby="coconutOilModalLabel" aria-hidden="true" style="                background-color: #EDDCD9;
+                ">
+                    <!-- Modal content goes here -->
+                </div>
+            </a>
+        </div>
+        
+        
+        <!-- Your other content -->
+        
+        <!-- Include jQuery -->
+        
+        
+        
+
+         
+      
+        
+        
+
+        <div class="col-md-4">
+            <!-- Groundnut Oil content in a centered card format with zoom effect and background color on hover -->
+            <a class="custom-card card d-flex flex-column align-items-center justify-content-center zoom-on-hover smoke-effect" 
+                style="background-color: #ffffff; box-shadow: 0 20px 25px rgba(25, 66, 9, 0.823); outline: 0px solid #093602; outline-offset: -15px; border-radius: 15px; width: 300px; height: 400px;"> <!-- Adjust the width and height here -->
+                
+                <!-- First section - Image -->
+                <div class="card-img-container">
+                    <img src="static/ground.jpg" alt="Groundnut Oil" class="card-img-top mt-4" style="height: 170px; width: 70px;">
+                </div>
+        
+                <!-- Second section - Text --> 
+                <div class="card-text-container text-center mt-5" style="width: 100%;  background-color: #332104; color: white;"> <!-- Adjust the width here -->
+                    <h5 class="card-title">Groundnut Oil</h5>
+                    <p class="card-text">Pure Chekku Oil</p>
+                    <del class="original-price">₹200</del>
+                    <p class="discounted-price">Price: ₹180</p>
+                    <p class="card-text">Quantity: 1 liter</p>
+                </div>
+                
+        
+                <!-- Modal for Groundnut Oil -->
+                <div class="modal fade" id="groundnutOilModal" tabindex="-1" role="dialog" aria-labelledby="groundnutOilModalLabel" aria-hidden="true">
+                    <!-- Modal content goes here -->
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Gingelly Oil content in a centered card format with zoom effect and background color on hover -->
+            <a class="custom-card card d-flex flex-column align-items-center justify-content-center zoom-on-hover smoke-effect" 
+                style="background-color: #ffffff; box-shadow: 0 20px 25px rgba(25, 66, 9, 0.823); outline: 0px solid #093602; outline-offset: -15px; border-radius: 15px; width: 300px; height: 400px;"> <!-- Adjust the width and height here -->
+                
+                <!-- First section - Image -->
+                <div class="card-img-container">
+                    <img src="static/gingelly.jpg" alt="Gingelly Oil" class="card-img-top mt-4" style="height: 170px; width: 70px;">
+                </div>
+        
+                <!-- Second section - Text -->
+                <div class="card-text-container text-center mt-5" style="width: 100%;  background-color: #332104; color: white;"> <!-- Adjust the width here -->
+                    <h5 class="card-title">Gingelly Oil</h5>
+                    <p class="card-text">Pure Chekku Oil</p>
+                    <del class="original-price">₹220</del>
+                    <p class="discounted-price">Price: ₹200</p>
+                    <p class="card-text">Quantity: 1 liter</p>
+                </div>
+        
+                <!-- Modal for Gingelly Oil -->
+                <div class="modal fade" id="gingellyOilModal" tabindex="-1" role="dialog" aria-labelledby="gingellyOilModalLabel" aria-hidden="true">
+                    <!-- Modal content goes here -->
+                </div>
+            </a>
+        </div>
+        
+
+
+<!-- Your existing JavaScript code -->
+
+
+
+{% endblock content %}
+</body>
+</html>

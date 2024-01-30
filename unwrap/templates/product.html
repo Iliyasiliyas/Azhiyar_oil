@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block head %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <article class="media content-section form_area">
+        <div class="media-body product-container">
+          <div class="article-metadata">
+            <h2 class="article-title title">{{ product.name }}</h2>
+            <p class="article-content sub_title">{{ product.description }}</p>
+            <div id="addToCart">
+              <a class="btn" href="/addToCart/{{product.id}}">Add to cart</a>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Paste the relevant styles here */
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .form_area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #EDDCD9;
+    height: auto;
+    width: auto;
+    border: 2px solid #264143;
+    border-radius: 20px;
+    box-shadow: 3px 4px 0px 1px #E99F4C;
+  }
+
+  .title {
+    color: #264143;
+    font-weight: 900;
+    font-size: 1.5em;
+    margin-top: 20px;
+  }
+
+  .sub_title {
+    font-weight: 600;
+    margin: 5px 0;
+  }
+
+  .btn {
+    padding: 15px;
+    margin: 25px 0px;
+    width: 290px;
+    font-size: 15px;
+    background: #2b1502;
+    border-style: dotted;
+    border-radius: 100px;
+    font-weight: 800;
+    box-shadow: 3px 3px 0px 0px #E99F4C;
+  }
+
+  .btn:hover {
+    opacity: .9;
+  }
+</style>
+  </div>
+
+{% endblock content %}

@@ -1,0 +1,364 @@
+body {
+  background: #000000;
+  margin-top: 5rem;
+  color: #000000; 
+  text-align: center;
+  font-family: 'Manjari', sans-serif;
+
+}
+
+h1, h2, h3, h4
+{
+  width: 100%;
+
+}
+
+#navbarToggle
+{
+  margin-top:20px;
+}
+
+#noOfItems
+{
+  margin-left: -20px
+}
+
+.card
+{
+  width: 25rem; 
+  height: 40rem;
+  margin-bottom: 20px;
+}
+
+.carousel-inner
+{
+  height: 500px
+}
+
+.form
+{
+  margin: auto; 
+  width: 60%; 
+  padding: 50px
+}
+
+main {
+
+  color: #00264d; 
+  text-align: center;
+  font-family: 'Manjari', sans-serif;
+}
+
+header
+{
+  height: 90px;  
+  border-bottom: 1px solid lightgrey; 
+}
+
+
+
+#logo
+{
+  height:50px;
+}
+
+#navbarToggle
+{
+  font-family: 'Manjari', sans-serif;
+  font-size:   18px;
+}
+
+
+
+.glyphicon
+{
+  color: #00264d; 
+  height: 10px;
+  font-size: 20px;
+}
+
+.glyphicon:hover
+{
+  color: #43b9f0; 
+}
+
+
+.site-header .navbar-nav .nav-link {
+  color: #00264d;
+}
+
+.site-header .navbar-nav .nav-link:hover {
+  color: #43b9f0;
+}
+
+.site-header .navbar-nav .nav-link.active {
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.content-section {
+  background: #ffffff;
+  padding: 10px 20px;
+  border: 1px solid #dddddd;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
+
+
+.account-heading {
+  font-size: 2.5rem;
+}
+
+
+.nav-item
+{
+  margin-right: 20px
+}
+
+footer {
+  left: 0;
+  bottom: 0;
+  text-align: center;
+  background-color: #f2f2f2;
+  font-family: 'Manjari', sans-serif;
+  margin-top: 40px;
+  color: #00264d
+}
+
+.nav-link
+{
+  display: inline;
+}
+.zoom-on-hover:hover {
+  transform: scale(1.40);
+  transition: transform 0.20s ease-in-out;
+  background-color: #f1efef; /* Change the color as needed */
+}
+
+.custom-card:hover .card-background-video {
+  opacity: 1;
+}
+.card-background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.custom-card:hover .card-background-video {
+  opacity: 1.7; /* Adjust this value as needed */
+}
+.message.message-success {
+  font-size: 16px; /* Adjust the font size as needed */
+}
+/* Add these styles to your external stylesheet */
+.product-container {
+  box-shadow: 0 20px 25px rgba(25, 66, 9, 0.823);
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+}
+
+.article-metadata {
+  height: fit-content;
+  box-shadow: 0 10px 15px rgba(25, 66, 9, 0.823);
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #ffffff;
+}
+
+.article-title {
+  color: #007bff;
+}
+
+#addToCart a {
+  background-color: #301b01;
+  color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+/* Styles for screens smaller than 768 pixels (typical mobile screens) */
+@media screen and (max-width: 768px) {
+  /* Add your mobile-specific styles here */
+  body {
+    font-size: 14px;
+  }
+
+  .container {
+    width: 100%;
+  }
+
+  /* ... other adjustments ... */
+}
+h1 {
+  line-height: 1.5; /* Adjust line height as needed */
+}
+h1 {
+  margin: 10px 0; /* Adjust margins as needed */
+}
+h1 {
+  text-align: center;
+}
+h1 {
+  max-width: 100%; /* Adjust as needed */
+}
+@media only screen and (max-width: 768px) {
+  h1 {
+    font-size: 24px; /* Adjust the font size as needed */
+  }
+}
+body {
+  background: #ffffff;
+  margin-top: 5rem;
+  color: #ffffff;
+  text-align: center;
+  font-family: 'Manjari', sans-serif;
+}
+
+h1 {
+  text-align: center;
+  max-width: 100%; /* Adjust as needed */
+  line-height: 1.5; /* Adjust line height as needed */
+  margin: 10px 0; /* Adjust margins as needed */
+
+  @media only screen and (max-width: 768px) {
+    font-size: 24px; /* Adjust the font size as needed for mobile screens */
+  }
+}
+
+/* Add your other styles for different elements here */
+
+/* Media query for screens smaller than 768 pixels (typical mobile screens) */
+@media only screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .container {
+    width: 100%;
+  }
+
+  /* Add your other mobile-specific styles here */
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn ease 4s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  outline: 2px solid black;
+  opacity: 0;
+  transform: translateY(-50%) translateX(-50%);
+  animation: fadeIn ease 0.1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(-50%) translateX(-50%);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0) translateX(0);
+  }
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.form_area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #EDDCD9;
+  height: auto;
+  width: auto;
+  border: 2px solid #264143;
+  border-radius: 20px;
+  box-shadow: 3px 4px 0px 1px #E99F4C;
+}
+
+.title {
+  color: #264143;
+  font-weight: 900;
+  font-size: 1.5em;
+  margin-top: 20px;
+}
+
+.sub_title {
+  font-weight: 600;
+  margin: 5px 0;
+}
+
+.form_group {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  margin: 10px;
+}
+
+.form_style {
+  outline: none;
+  border: 2px solid #264143;
+  box-shadow: 3px 4px 0px 1px #E99F4C;
+  width: 290px;
+  padding: 12px 10px;
+  border-radius: 4px;
+  font-size: 15px;
+}
+
+.form_style:focus,
+.btn:focus {
+  transform: translateY(4px);
+  box-shadow: 1px 2px 0px 0px #E99F4C;
+}
+
+.btn {
+  padding: 15px;
+  margin: 25px 0px;
+  width: 290px;
+  font-size: 15px;
+  background: #301b01;
+  border-radius: 10px;
+  font-weight: 800;
+  box-shadow: 3px 3px 0px 0px #E99F4C;
+}
+
+.btn:hover {
+  opacity: .9;
+}
+
+.link {
+  font-weight: 800;
+  color: #264143;
+  padding: 5px;
+}
+

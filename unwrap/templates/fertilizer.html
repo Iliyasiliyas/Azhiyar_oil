@@ -1,0 +1,213 @@
+<!-- fertilizer.html -->
+{% extends "layout.html" %}
+{% block content %}
+    <!-- Add your fertilizer page content here -->
+   
+    <!-- ... Your existing HTML code ... -->
+    
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="height: 450px">
+        <ol class="carousel-indicators">
+          <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <a href="">
+              <a href="#container" onclick="window.location.hash='container';">
+                <img src="/static/agro.jpeg" class="d-block w-100" alt="...">
+            </a>
+            
+           
+          </a>
+          
+          </div>
+         
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+      
+      <div class="jumbotron">
+        <h1 class="display-4">100% Orginal Fertilizers</h1>
+        <!-- <hr class="my-4"> -->
+        
+      </div>
+      
+    <div class="container" id="container">
+        <div class="row">
+            <!-- Coconut Oil -->
+            <div class="col-md">
+                <!-- Coconut Oil content -->
+                <img src="/static/urea1.jpg" alt="Coconut Oil" class="img-fluid" style="height: 160px; width: 170px">
+    
+                <h1>Urea</h1>
+                <p>100% Orginal</p>
+                <del>₹300</del>
+                <p>Price: ₹270</p>
+                <p>Quantity: 45 kg</p>
+    
+                <!-- Quantity control buttons for Coconut Oil -->
+                <div class="quantity-control">
+                    <button class="btn btn-sm btn-secondary" onclick="updateQuantity('coconut', -1)">-</button>
+                    <span id="quantity-coconut">0</span>
+                    <button class="btn btn-sm btn-secondary" onclick="updateQuantity('coconut', 1)">+</button>
+                </div>
+    
+                <!-- Add to Cart button for Coconut Oil -->
+                <form action="{{ url_for('addToCart', product_id=1, product_name='coconut_oil') }}" method="post">
+                    <input type="hidden" id="quantity-input-coconut" name="quantity" value="0">
+                    <button type="submit" class="btn btn-primary mt-2">Add to Cart</button>
+                </form>
+    
+                <!-- Modal for Coconut Oil -->
+                <div class="modal fade" id="coconutOilModal" tabindex="-1" role="dialog" aria-labelledby="coconutOilModalLabel" aria-hidden="true">
+                    <!-- Modal content goes here -->
+                </div>
+            </div>
+            
+            
+    
+            <!-- Groundnut Oil -->
+            <div class="col-md">
+                <!-- Groundnut Oil content -->
+                <img src="/static/DAP.webp" alt="DAP" class="img-fluid" style="height: 150px; width: 120px">
+    
+                <h1>DAP</h1>
+                <p>100% Orginal</p>
+                <del>₹1500</del>
+                <p>Price: ₹1350</p>
+                <p>Quantity: 50 kg</p>
+    
+                <!-- Quantity control buttons for Groundnut Oil -->
+                <div class="quantity-control">
+                    <button class="btn btn-sm btn-secondary" onclick="updateQuantity('groundnut', -1)">-</button>
+                    <span id="quantity-groundnut">0</span>
+                    <button class="btn btn-sm btn-secondary" onclick="updateQuantity('groundnut', 1)">+</button>
+                </div>
+    
+                <!-- Add to Cart button for Groundnut Oil -->
+                <form action="{{ url_for('addToCart', product_id=2, product_name='groundnut_oil') }}" method="post">
+                    <input type="hidden" id="quantity-input-groundnut" name="quantity" value="0">
+                    <button type="submit" class="btn btn-primary mt-2">Add to Cart</button>
+                </form>
+    
+                <!-- Modal for Groundnut Oil -->
+                <div class="modal fade" id="groundNutOilModal" tabindex="-1" role="dialog" aria-labelledby="groundNutOilModalLabel" aria-hidden="true">
+                    <!-- Modal content goes here -->
+                </div>
+            </div>
+    
+            <!-- Gingelly Oil -->
+            <div class="col-md">
+                <!-- Gingelly Oil content -->
+                <img src="/static/mop.webp" alt="Gingelly Oil" class="img-fluid" style="height: 150px; width: 100px">
+    
+                <h1>MOP</h1>
+                <p>100% Orginal</p>
+                <del>₹2000</del>
+                <p>Price: ₹1700</p>
+                <p>Quantity: 50 kg</p>
+    
+                <!-- Quantity control buttons for Gingelly Oil -->
+                <div class="quantity-control">
+                    <button class="btn btn-sm btn-secondary" onclick="updateQuantity('gingelly', -1)">-</button>
+                    <span id="quantity-gingelly">0</span>
+                    <button class="btn btn-sm btn-secondary" onclick="updateQuantity('gingelly', 1)">+</button>
+                </div>
+    
+                <!-- Add to Cart button for Gingelly Oil -->
+                <form action="{{ url_for('addToCart', product_id=3, product_name='gingelly_oil') }}" method="post">
+                    <input type="hidden" id="quantity-input-gingelly" name="quantity" value="0">
+                    <button type="submit" class="btn btn-primary mt-2">Add to Cart</button>
+                </form>
+    
+                <!-- Modal for Gingelly Oil -->
+                <div class="modal fade" id="gingellyOilModal" tabindex="-1" role="dialog" aria-labelledby="gingellyOilModalLabel" aria-hidden="true">
+                    <!-- Modal content goes here -->
+                </div>
+            </div>
+            <div class="col-md">
+                <!-- Gingelly Oil content -->
+                <img src="/static/ammonium.png" alt="Gingelly Oil" class="img-fluid" style="height: 150px; width: 100px">
+    
+                <h1>Ammonium Sulphate</h1>
+                <p>100% Orginal</p>
+                <del>₹750</del>
+                <p>Price: ₹670</p>
+                <p>Quantity: 50 kg</p>
+    
+                <!-- Quantity control buttons for Gingelly Oil -->
+                <div class="quantity-control">
+                    <button class="btn btn-sm btn-secondary" onclick="updateQuantity('gingelly', -1)">-</button>
+                    <span id="quantity-gingelly">0</span>
+                    <button class="btn btn-sm btn-secondary" onclick="updateQuantity('gingelly', 1)">+</button>
+                </div>
+    
+                <!-- Add to Cart button for Gingelly Oil -->
+                <form action="{{ url_for('addToCart', product_id=3, product_name='gingelly_oil') }}" method="post">
+                    <input type="hidden" id="quantity-input-gingelly" name="quantity" value="0">
+                    <button type="submit" class="btn btn-primary mt-2">Add to Cart</button>
+                </form>
+    
+                <!-- Modal for Gingelly Oil -->
+                <div class="modal fade" id="gingellyOilModal" tabindex="-1" role="dialog" aria-labelledby="gingellyOilModalLabel" aria-hidden="true">
+                    <!-- Modal content goes here -->
+                </div>
+            </div>
+            <div class="col-md">
+                <!-- Gingelly Oil content -->
+                <img src="/static/super.png" alt="Gingelly Oil" class="img-fluid" style="height: 150px; width: 100px">
+    
+                <h1>Super Phosphate</h1>
+                <p>100% Orginal</p>
+                <del>₹800</del>
+                <p>Price: ₹635</p>
+                <p>Quantity: 50 kg</p>
+    
+                <!-- Quantity control buttons for Gingelly Oil -->
+                <div class="quantity-control">
+                    <button class="btn btn-sm btn-secondary" onclick="updateQuantity('gingelly', -1)">-</button>
+                    <span id="quantity-gingelly">0</span>
+                    <button class="btn btn-sm btn-secondary" onclick="updateQuantity('gingelly', 1)">+</button>
+                </div>
+    
+                <!-- Add to Cart button for Gingelly Oil -->
+                <form action="{{ url_for('addToCart', product_id=3, product_name='gingelly_oil') }}" method="post">
+                    <input type="hidden" id="quantity-input-gingelly" name="quantity" value="0">
+                    <button type="submit" class="btn btn-primary mt-2">Add to Cart</button>
+                </form>
+    
+                <!-- Modal for Gingelly Oil -->
+                <div class="modal fade" id="gingellyOilModal" tabindex="-1" role="dialog" aria-labelledby="gingellyOilModalLabel" aria-hidden="true">
+                    <!-- Modal content goes here -->
+                </div>
+            </div>
+    
+        </div>
+    </div>
+    
+    <!-- Your existing JavaScript code -->
+    
+    <script>
+        // Function to update quantity and display for any product
+        function updateQuantity(product, change) {
+            const quantitySpan = document.getElementById(`quantity-${product}`);
+            const quantityInput = document.getElementById(`quantity-input-${product}`);
+    
+            let quantity = parseInt(quantitySpan.innerText) + change;
+            quantity = Math.max(0, quantity); // Ensure quantity is not negative
+    
+            quantitySpan.innerText = quantity;
+            quantityInput.value = quantity;
+        }
+    </script>
+    
+    {% endblock content %}
+    
