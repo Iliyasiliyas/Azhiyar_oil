@@ -22,7 +22,7 @@ python run.py
 ****
 screenshots:
 Home page:
-![Uploading image.png…]()
+![homepage](https://github.com/Iliyasiliyas/Azhiyar_oil/assets/125146066/e0fb6062-9a0f-4364-80f4-38d5400b92ff)
 
 ## Resources
 
